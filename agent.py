@@ -4,6 +4,9 @@ from langchain.tools import Tool
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 
+from tools.vector import kg_qa
+from tools.cypher import cypher_qa
+
 # Include the LLM from a previous lesson
 from llm import llm
 
@@ -19,7 +22,19 @@ tools = [
         description="For general chat not covered by other tools",
         func=llm.invoke,
         return_direct=False
-    )
+        ),
+    Tool.from_function(
+        name="Vector Search Index",
+        description="Provides information about movie plots using Vector Search",
+        func = kg_qa,
+        return_direct=False
+    ),
+    Tool.from_function(
+        name="Graph Cypher QA Chain",  # (1)
+        description="Provides information about Movies including their Actors, Directors and User reviews", # (2)
+        func = cypher_qa, # (3)
+        return_direct=False
+    ),
 ]
 
 agent_prompt = PromptTemplate.from_template("""
